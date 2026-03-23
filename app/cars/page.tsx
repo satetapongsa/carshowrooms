@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, Suspense } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, SlidersHorizontal, Grid, List as ListIcon, X } from 'lucide-react'
 import { useSearchParams } from 'next/navigation'
@@ -22,7 +22,7 @@ import { Footer } from '@/components/footer'
 import { CarCard } from '@/components/car-card'
 import { cars, vehicleTypes, brands } from '@/lib/data'
 
-export default function CarsPage() {
+function CarsContent() {
   const searchParams = useSearchParams()
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [isFilterOpen, setIsFilterOpen] = useState(false)
@@ -61,7 +61,6 @@ export default function CarsPage() {
       <Navbar />
       
       <main className="container mx-auto px-4 pt-24 pb-12">
-        {/* Header */}
         <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 md:text-4xl">Our Car Collection</h1>
@@ -94,7 +93,6 @@ export default function CarsPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
-          {/* Filters - Sidebar */}
           <aside className="hidden lg:block space-y-6">
             <Card className="sticky top-24 border-none shadow-xl bg-white/80 backdrop-blur-md">
               <CardContent className="p-6 space-y-6">
@@ -194,7 +192,6 @@ export default function CarsPage() {
             </Card>
           </aside>
 
-          {/* Cars Grid */}
           <div className="lg:col-span-3">
             {filteredCars.length > 0 ? (
               <div className={viewMode === 'grid' ? "grid gap-6 md:grid-cols-2 lg:grid-cols-3" : "flex flex-col gap-6"}>
@@ -264,7 +261,6 @@ export default function CarsPage() {
                 </Button>
               </div>
 
-              {/* Duplicate Filter Content for Mobile */}
               <div className="space-y-6">
                 <div>
                   <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-gray-400">Search</h3>
@@ -358,5 +354,21 @@ export default function CarsPage() {
 
       <Footer />
     </div>
+  )
+}
+
+export default function CarsPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50/50 flex flex-col pt-24 items-center">
+        <Navbar />
+        <div className="animate-pulse space-y-4">
+          <div className="h-8 w-48 bg-gray-200 rounded"></div>
+          <div className="h-4 w-64 bg-gray-100 rounded"></div>
+        </div>
+      </div>
+    }>
+      <CarsContent />
+    </Suspense>
   )
 }
